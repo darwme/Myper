@@ -1,0 +1,21 @@
+services:
+  workersapp:
+    image: ${DOCKER_REGISTRY-}workersapp
+    container_name: Myper.workersapp
+    build:
+      context: .
+      dockerfile: WorkersApp/Dockerfile
+    ports:
+      - "8080:80"
+      - "8081:443"
+    depends_on:
+      - database
+
+  database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: Myper.database
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Admin123!
+    ports:
+      - "1433:1433"

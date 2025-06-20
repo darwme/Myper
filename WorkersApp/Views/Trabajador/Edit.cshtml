@@ -1,0 +1,130 @@
+﻿@model WorkersApp.Models.Trabajador
+@using WorkersApp.Models
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Editar Trabajador";
+    var departamentos = ViewBag.Departamentos as List<Departamento>;
+    var provincias = ViewBag.Provincias as List<Provincia>;
+    var distritos = ViewBag.Distritos as List<Distrito>;
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Edit" method="post" class="mt-4">
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <div class="mb-3">
+        <label name="TipoDocumento" class="form-label">Tipo de Documento</label>
+        <input name="TipoDocumento" readonly value="@Model.TipoDocumento" class="form-control" />
+        <span asp-validation-for="TipoDocumento" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label name="NumeroDocumento" class="form-label">Numero de Documento</label>
+        <input name="NumeroDocumento" readonly value="@Model.NumeroDocumento" class="form-control" />
+        <span asp-validation-for="NumeroDocumento" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label name="Nombres" class="form-label">Nombres</label>
+        <input name="Nombres" readonly value="@Model.Nombres" class="form-control" />
+        <span asp-validation-for="Nombres" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label name="Sexo" class="form-label">Sexo</label>
+        <select name="Sexo" class="form-select" required>
+            <option value="M">Masculino</option>
+            <option value="F">Femenino</option>
+        </select>
+        <span asp-validation-for="Sexo" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label name="IdDepartamento" class="form-label">Departamento</label>
+        <select name="IdDepartamento" class="form-select" id="departamentoSelect" required>
+            <option value="">Seleccione un departamento</option>
+            @if (departamentos != null)
+            {
+                foreach (var dep in departamentos)
+                {
+                    <option value="@dep.Id">@dep.NombreDepartamento</option>
+                }
+            }
+        </select>
+        <span asp-validation-for="IdDepartamento" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label name="IdProvincia" class="form-label">Provincia</label>
+        <select name="IdProvincia" class="form-select" id="provinciaSelect" required>
+            <option value="">Seleccione una provincia</option>
+            @if (provincias != null)
+            {
+                foreach (var prov in provincias)
+                {
+                    <option value="@prov.Id" data-dep="@prov.IdDepartamento">@prov.NombreProvincia</option>
+                }
+            }
+        </select>
+        <span asp-validation-for="IdProvincia" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label name="IdDistrito" class="form-label">Distrito</label>
+        <select name="IdDistrito" class="form-select" id="distritoSelect" required>
+            <option value="">Seleccione un distrito</option>
+            @if (distritos != null)
+            {
+                foreach (var dist in distritos)
+                {
+                    <option value="@dist.Id" data-prov="@dist.IdProvincia">@dist.NombreDistrito</option>
+                }
+            }
+        </select>
+        <span asp-validation-for="IdDistrito" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    <a href="/" class="btn btn-secondary ms-2">Volver</a>
+</form>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const departamentoSelect = document.getElementById('departamentoSelect');
+            const provinciaSelect = document.getElementById('provinciaSelect');
+            const distritoSelect = document.getElementById('distritoSelect');
+            const form = document.querySelector('form[asp-action="Edit"]');
+
+
+            function filtrarProvincias() {
+                const depId = departamentoSelect.value;
+                Array.from(provinciaSelect.options).forEach(opt => {
+                    if (!opt.value) return opt.hidden = false;
+                    opt.hidden = opt.getAttribute('data-dep') !== depId;
+                });
+                provinciaSelect.value = "";
+                filtrarDistritos();
+            }
+
+            function filtrarDistritos() {
+                const provId = provinciaSelect.value;
+                Array.from(distritoSelect.options).forEach(opt => {
+                    if (!opt.value) return opt.hidden = false;
+                    opt.hidden = opt.getAttribute('data-prov') !== provId;
+                });
+                distritoSelect.value = "";
+            }
+
+            departamentoSelect.addEventListener('change', filtrarProvincias);
+            provinciaSelect.addEventListener('change', filtrarDistritos);
+
+            // Inicializar filtros si hay valores seleccionados
+            if (departamentoSelect.value) filtrarProvincias();
+            if (provinciaSelect.value) filtrarDistritos();
+
+            form.addEventListener('submit', function (e) {
+                console.log('TipoDocumento:', form.TipoDocumento.value);
+                console.log('NumeroDocumento:', form.NumeroDocumento.value);
+                console.log('Nombres:', form.Nombres.value);
+                console.log('Sexo:', form.Sexo.value);
+                console.log('IdDepartamento:', form.IdDepartamento.value);
+                console.log('IdProvincia:', form.IdProvincia.value);
+                console.log('IdDistrito:', form.IdDistrito.value);
+            });
+        });
+    </script>
+}

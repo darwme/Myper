@@ -1,0 +1,6 @@
+@WorkersApp_HostAddress = http://localhost:5002
+
+GET {{WorkersApp_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

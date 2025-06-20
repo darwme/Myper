@@ -1,0 +1,15 @@
+﻿@model WorkersApp.Models.Trabajador
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Eliminar Trabajador";
+}
+
+<h2>¿Estás seguro de que deseas eliminar este trabajador?</h2>
+<div>
+    <strong>@Model.Nombres</strong> - @Model.NumeroDocumento
+</div>
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Cancelar</a>
+</form>
